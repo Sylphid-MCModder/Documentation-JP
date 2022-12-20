@@ -1,10 +1,10 @@
-# Documentation
-This is the official MinecraftForge documentation, located at https://docs.minecraftforge.net.
+# ドキュメント
+このドキュメントは、Minecraft Forge公式ドキュメントで、https://docs.minecraftforge.net/ にあるものと同一です。
 
-It is intended to provide detailed documentation of Forge development concepts. This does not include javadocs.
+Forgeの開発コンセプトの詳細な文字化を目的に作られています。Javadocは含みません。
 
-The intent with this is to create a curated *definitive* source of documentation for developing mods with Forge. It is not a Java language tutorial, and basic concepts of Java should not be part of this documentation. Excessive example code will be avoided in lieu of more thorough explanations.
+これの目的は、ForgeでMod開発をするための*決定的な*ソースを作ることです。Javaのチュートリアルではないですし、それはここにあるべきではないでしょう。説明の代わりに、サンプルコードは少なくしてあります。
 
-Feel free to submit pull requests related to documentation of Forge development here. See [CONTRIBUTING.md](/CONTRIBUTING.md)
+Pull Requestの投稿はお気軽にどうぞ。[CONTRIBUTING.md](/CONTRIBUTING.md)も参照してください。
 
-Don't expect this to be constantly being updated, though we will try and remedy egregious errors more quickly.
+これが常に更新され続けるとは限りませんが、それでも我々は内容の訂正をし続けます。
