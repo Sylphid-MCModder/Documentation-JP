@@ -1,20 +1,20 @@
-Resources
+リソース
 =========
 
-A resource is extra data used by the game, and is stored in a data file, instead of being in the code. 
-Minecraft has two primary resource systems active: one on the logical client used for visuals such as models, textures, and localization called `assets`, and one on the logical server used for gameplay such as recipes and loot tables called `data`.
-[Resource packs][respack] control the former, while [Datapacks][datapack] control the latter.
+リソースはゲーム内で使用される追加データで、コード内で記述する代わりにデータファイルを用いて保存されます。
+Minecraftは2つの主要なシステムを持っています。一つはクライアント上で処理される「モデル」「テクスチャ」「ローカライゼーション」等の`assets`、もう一つは論理サーバーで処理される「レシピ」「ルートテーブル」のような`data`です。
+[リソースパック][respack]は前者を、[データパック][datapack]は後者に干渉できます。
 
-In the default mod development kit, assets and data directories are located under the `src/main/resources` directory of the project. 
+初期状態のMod開発キット(MDK)では、アセット・データはプロジェクトの`src/main/resources`フォルダに格納されます。
 
-When multiple resource packs or data packs are enabled, they are merged. Generally, files from packs at the top of the stack override those below; however, for certain files, such as localization files and tags, data is actually merged contentwise. Mods define resource and data packs in their `resources` directories, but they are seen as subsets of the "Mod Resources" pack. Mod resource packs cannot be disabled, but they can be overridden by other resource packs. Mod datapacks can be disabled with the vanilla `/datapack` command.
+複数のリソースパック・データパックが有効な場合、これらは統合されます。一般的に、スタックの上位にあるデータパックがその下位にあるデータパックの要素をオーバーライドします。しかし、ローカライゼーションやタグ、データ等の特定のファイルはコンテンツごとに統合されます。Modは`resources`フォルダに基づきリソースパックとデータパックを構成しますが、これは"Mod Resources"パックのサブセットとして認識されます。Modリソースパックは無効化できませんが、他のデータパックでオーバーライドできます。Modデータパックは`/datapack` コマンドで無効化できます。これはVanillaの要素に基づいています。
 
-All resources should have snake case paths and filenames (lowercase, using "_" for word boundaries), which is enforced in 1.11 and above.
+Minecraft 1.11以降、全てのリソースはスネークケースな(小文字・区切りでの"_"の使用)パスとファイル名である必要があります。
 
 `ResourceLocation`
 ------------------
 
-Minecraft identifies resources using `ResourceLocation`s. A `ResourceLocation` contains two parts: a namespace and a path. It generally points to the resource at `assets/<namespace>/<ctx>/<path>`, where `ctx` is a context-specific path fragment that depends on how the `ResourceLocation` is being used. When a `ResourceLocation` is written/read as from a string, it is seen as `<namespace>:<path>`. If the namespace and the colon are left out, then when the string is read into an `ResourceLocation` the namespace will always default to `"minecraft"`. A mod should put its resources into a namespace with the same name as its modid (e.g. a mod with id `examplemod` should place its resources in `assets/examplemod` and `data/examplemod` respectively, and `ResourceLocation`s pointing to those files would look like `examplemod:<path>`.). This is not a requirement, and in some cases it can be desirable to use a different (or even more than one) namespace. `ResourceLocation`s are used outside the resource system, too, as they happen to be a great way to uniquely identify objects (e.g. [registries][]).
+Minecraftはリソースを`ResourceLocation`で特定します。`ResourceLocation`は次の2つのパーツで構成されます:「ネームスペース」「パス」。一般的に、`assets/<namespace>/<ctx>/<path>`とフォルダ構造を構築します。`ctx`は`ResourceLocation`の使用法に依存する属性指定のフラグメントです。  When a `ResourceLocation`が文字列として読取/書込された時、`<namespace>:<path>`のように確認できます。名前空間とコロンを省くと、`ResourceLocation`は`"minecraft"`名前空間に書込を行います。ですが、Modはそのmodidと同名の名前空間にリソースを割り当てることが推奨されています(例:`examplemod`というmodidの場合、`assets/examplemod` と`data/examplemod`にリソースを配置し、`ResourceLocation`では`examplemod:<path>`のように指定する)。 これは必須項目ではなく、いくつかの例ではMod内で複数の名前空間を使用します。`ResourceLocation`は同様にリソースシステム外でも、特定のオブジェクトの指定のために使用されることがあります(例:[レジストリ][registries])。
 
 [respack]: ../resources/client/index.md
 [datapack]: ../resources/server/index.md

@@ -1,49 +1,49 @@
-Blocks
+ブロック
 ======
 
-Blocks are, obviously, essential to the Minecraft world. They make up all of the terrain, structures, and machines. Chances are if you are interested in making a mod, then you will want to add some blocks. This page will guide you through the creation of blocks, and some of the things you can do with them.
+ブロックは、Minecraftの世界を構成する基本的な要素の一つです。これらは地形や構造物、機械等を構成します。もしModを作る機会があるなら、一つはブロックを追加してみたくなるでしょう。このページでは基本的なブロックの作り方と、ブロックで行える動作について解説します。
 
-Creating a Block
+ブロックの作成
 ----------------
 
-### Basic Blocks
+### 通常ブロック
 
-For simple blocks, which need no special functionality (think cobblestone, wooden planks, etc.), a custom class is not necessary. You can create a block by instantiating the `Block` class with a `BlockBehaviour$Properties` object. This `BlockBehaviour$Properties` object can be made using `BlockBehaviour$Properties#of`, and it can be customized by calling its methods. For instance:
+他の機能を必要としないブロック(木材・丸石など)には、カスタムクラスは不必要です。`Block`と`BlockBehaviour$Properties`オブジェクトにより、即席でブロックを作成できます。`BlockBehaviour$Properties`は`BlockBehaviour$Properties#of`により作成でき、以下のようなメソッドにより編集できます。:
 
-- `strength` - The hardness controls the time it takes to break the block. It is an arbitrary value. For reference, stone has a hardness of 1.5, and dirt 0.5. If the block should be unbreakable a hardness of -1.0 should be used, see the definition of `Blocks#BEDROCK` as an example. The resistance controls the explosion resistance of the block. For reference, stone has a resistance of 6.0, and dirt 0.5.
-- `sound` - Controls the sound the block makes when it is punched, broken, or placed. Requires a `SoundType` argument, see the [sounds] page for more details.
-- `lightLevel` - Controls the light emission of the block. Takes a function with a `BlockState` parameter that returns a value from zero to fifteen.
-- `friction` - Controls how slippery the block is. For reference, ice has a slipperiness of 0.98.
+- `strength` - ブロックを破壊するのにかかる時間を設定します。任意の数値です。例えば、石の場合``1.5``、土の場合``0.5``に設定されています。破壊不可のブロックにする場合、``-1.0``に設定するのが一般的です。`Blocks#BEDROCK`の定義もご覧ください。これの抵抗はブロックの爆破耐性も設定します。参考として、石は6.0、土は0.5に設定されています。
+- `sound` - ブロックがパンチ・破壊・設置された時に再生される音を指定します。`SoundType`型の引数が必要です。この詳細は[サウンド]をご覧ください。
+- `lightLevel` - ブロックの照度を設定します。0~15の範囲の数値を返す`BlockState`パラメータと関数を取得します。
+- `friction` - ブロックの滑りやすさを設定します。例えば、氷は0.98です。
 
-All these methods are *chainable* which means you can call them in series. See the `Blocks` class for examples of this.
+これらのメソッドは*チェーン可能*で、一度に宣言し切ることが可能です。`Blocks`クラスも参考にしてください。
 
 !!! note
-    Blocks have no setter for their `CreativeModeTab`. This is now handled by the [`CreativeModeTabEvent$BuildContents`][creativetabs] if the block has an associated item (e.g. `BlockItem`). Furthermore, there is no setter for translation key as it is now generated from the registry name.
+    Blockクラスは`CreativeModeTab`のセッターを持ちません。これは現在、[`CreativeModeTabEvent$BuildContents`][creativetabs]により、ブロックに関するアイテム(例:`BlockItem`)がある場合に設定されます。さらに、レジストリ名からメニューを生成するようになったため、トランスレーションキーのセッターはありません。
 
-### Advanced Blocks
+### 発展ブロック
 
-Of course, the above only allows for extremely basic blocks. If you want to add functionality, like player interaction, a custom class is required. However, the `Block` class has many methods and unfortunately not every single one can be documented here. See the rest of the pages in this section for things you can do with blocks.
+あくまでこれは一般的なブロックのことについて述べているだけです。プレイヤーのインタラクション等に対応したい場合、カスタムクラスが必要です。しかし、`Block`クラスはあまりに多くのパラメータを持っており、ここでその全てを述べることはできません。ブロックでできることについては、このページの残りのセクションをご覧ください。
 
-Registering a Block
+ブロックの登録
 -------------------
 
-Blocks must be [registered][registering] to function.
+ブロックは[登録されている][registering]必要があります。
 
 !!! important
-    A block in the level and a "block" in an inventory are very different things. A block in the level is represented by an `BlockState`, and its behavior defined by an instance of `Block`. Meanwhile, an item in an inventory is an `ItemStack`, controlled by an `Item`. As a bridge between the different worlds of `Block` and `Item`, there exists the class `BlockItem`. `BlockItem` is a subclass of `Item` that has a field `block` that holds a reference to the `Block` it represents. `BlockItem` defines some of the behavior of a "block" as an item, like how a right click places the block. It's possible to have a `Block` without an `BlockItem`. (E.g. `minecraft:water` exists a block, but not an item. It is therefore impossible to hold it in an inventory as one.)
+    ブロックが世界に存在していることと"ブロック"がインベントリに存在することは全く違います。世界に存在するブロックについては`BlockState`により定義されますが、その動作に関しては`Block`インスタンスにより定義されます。一方、アイテムがインベントリにある状態は`ItemStack`で定義され、`Item`により操作できます。`Block`と`Item`という2つの異なる事項をつなげるべく、`BlockItem`クラスがあります。`BlockItem`は`Item`のサブクラスで、`block`という`Block`への参照を含んだフィールドを提供します。`BlockItem`は"ブロック"のアイテムとしての動作(右クリックでブロックを配置するような)を定義します。また、`Block`を`BlockItem`なしで定義することもできます(例: `minecraft:water` はブロックですが、アイテムとしては存在しません。これをインベントリ内に保持することはできません)。
 
-    When a block is registered, *only* a block is registered. The block does not automatically have an `BlockItem`. To create a basic `BlockItem` for a block, one should set the registry name of the `BlockItem` to that of its `Block`. Custom subclasses of `BlockItem` may be used as well. Once an `BlockItem` has been registered for a block, `Block#asItem` can be used to retrieve it. `Block#asItem` will return `Items#AIR` if there is no `BlockItem` for the `Block`, so if you are not certain that there is an `BlockItem` for the `Block` you are using, check for if `Block#asItem` returns `Items#AIR`.
+    ブロックの登録時は、Block**のみ**登録され、自動的に`BlockItem`は生成されません。通常の`BlockItem`を作成する際は、`BlockItem`のレジストリ名を対象の`Block`のものと一致させる必要があります。`BlockItem`のサブクラスも使用可能です。`BlockItem`の登録時、`Block#asItem`が使用可能になります。`Block#asItem`は`BlockItem`が未登録の場合は`Items#AIR`を返すため、`BlockItem`を適切に得れなかった場合は、`Items#AIR`が返ってきていないか確認してください。
 
-#### Optionally Registering Blocks
+#### ブロック登録時のオプション
 
-In the past there have been several mods that have allowed users to disable blocks/items in a configuration file. However, you shouldn't do this. There is no limit on the amount of blocks that can be register, so register all blocks in your mod! If you want a block to be disabled through a configuration file, you should disable the crafting recipe. If you would like to disable the block in the creative tab, use a `FeatureFlag` when building the contents within [`CreativeModeTabEvent$BuildContents`][creativetabs].
+かつては、ユーザーはブロック/アイテムをコンフィグファイルで無効化できましたが。これは非推奨です。ブロックの登録可能量に制限はないため、全てのブロックを登録してください。もしもこの方法を使い続けたい場合、レシピも無効化すべきです。クリエイティブタブでの表示を無効化したい場合、[`CreativeModeTabEvent$BuildContents`][creativetabs]発動時に`FeatureFlag`をご利用ください。
 
-Further Reading
+あわせて読む
 ---------------
 
-For information about block properties, such as those used for vanilla blocks like fences, walls, and many more, see the section on [blockstates].
+フェンスや壁などの、状態が変化するブロックなどについては[ブロックステート][blockstates]をご覧ください。
 
-[sounds]: ../gameeffects/sounds.md
+[サウンド]: ../gameeffects/sounds.md
 [creativetabs]: ../items/index.md#creativemodetabevent
 [registering]: ../concepts/registries.md#methods-for-registering
 [blockstates]: states.md

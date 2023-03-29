@@ -1,22 +1,24 @@
-Registries
+レジストリ
 ==========
 
-Registration is the process of taking the objects of a mod (such as items, blocks, sounds, etc.) and making them known to the game. Registering things is important, as without registration the game will simply not know about these objects, which will cause unexplainable behaviors and crashes. 
+レジストレーション(登録)はModの要素(ブロック、アイテム、バイオーム等)をゲームに認識させるための機構です。これはとても重要で、このプロセスを省くとModの要素がゲーム側に認識されないのはもちろん、ゲームの動作に支障を及ぼしたりクラッシュを発生させたりする場合があります。
 
-Most things that require registration in the game are handled by the Forge registries. A registry is an object similar to a map that assigns values to keys. Forge uses registries with [`ResourceLocation`][ResourceLocation] keys to register objects. This allows the `ResourceLocation` to act as the "registry name" for objects.
+多くの登録が必要なオブジェクトはForgeレジストリで定義されています。レジストリは、キーと値の単純な関連付けです。Forgeは[`ResourceLocation`][ResourceLocation]キーをオブジェクト登録時に使用します。これはオブジェクトに対し`ResourceLocation`が"レジストリ名"にアクセスできるようにするためです。
 
-Every type of registrable object has its own registry. To see all registries wrapped by Forge, see the `ForgeRegistries` class. All registry names within a registry must be unique. However, names in different registries will not collide. For example, there's a `Block` registry, and an `Item` registry. A `Block` and an `Item` may be registered with the same name `example:thing` without colliding; however, if two different `Block`s or `Item`s were registered with the same exact name, the second object will override the first.
+全ての登録可能なオブジェクトは固有のレジストリを持っています。Forgeレジストリの内部構造を見たい場合、`ForgeRegistries`クラスをご覧ください。全てのレジストリ名は固有のものである必要があります。しかし、異なるタイプのレジストリにおいて名前は競合しません。例として、`Block`レジストリと`Item`レジストリにて、`Block`と`Item`の間では同じ名称`example:thing`を使って登録しても競合しません。(ただし同じレジストリ内で同様のことを行った場合、後発のオブジェクトが先発のオブジェクトをオーバーライドします。)
 
-Methods for Registering
+レジストリ用メソッド
 ------------------
 
-There are two proper ways to register objects: the `DeferredRegister` class, and the `RegisterEvent` lifecycle event.
+登録のためには以下二つの有効な手段があります。:
+* `DeferredRegister`クラス
+* `RegisterEvent`イベント
 
 ### DeferredRegister
 
-`DeferredRegister` is the recommended way to register objects. It allows the use and convenience of static initializers while avoiding the issues associated with it. It simply maintains a list of suppliers for entries and registers the objects from those suppliers during `RegisterEvent`.
+`DeferredRegister`は登録の際に推奨されるメソッドです。登録の際に想定される問題を回避しつつ、静的な初期化の利便性と安定性を高めます。エントリーのサプライヤーのリストを保持し、`RegisterEvent`中にそれらを登録するだけです。
 
-An example of a mod registering a custom block:
+ブロックの登録例:
 
 ```java
 private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
@@ -30,9 +32,9 @@ public ExampleMod() {
 
 ### `RegisterEvent`
 
-`RegisterEvent` is the second way to register objects. This [event] is fired for each registry after the mod constructors and before the loading of configs. Objects are registered using `#register` by passing in the registry key, the name of the registry object, and the object itself. There is an additional `#register` overload which takes in a consumed helper to register an object with a given name. It is recommended to use this method to avoid unnecessary object creation.
+`RegisterEvent`はオブジェクトを登録するための2つ目の手段です。この[イベント]はModのコンストラクタの起動後、およびコンフィグのロード前に発動します。オブジェクトは「レジストリキー」「レジストリオブジェクト名」「オブジェクト本体」を渡すことにより、`#register`に登録されます。追加の`#register`オーバーロードをすることで、「名称を指定してオブジェクトを登録するプロセス」に使用されたヘルパーを取得することもできます。不必要なオブジェクトの作成を回避するのに有用です。
 
-Here is an example: (the event handler is registered on the *mod event bus*)
+例: (このイベントハンドラは*Modイベントバス*で登録されています)
 
 ```java
 @SubscribeEvent
@@ -48,12 +50,12 @@ public void register(RegisterEvent event) {
 }
 ```
 
-### Registries that aren't Forge Registries
+### Forge以外のレジストリ
 
-Not all registries are wrapped by Forge. These can be static registries, like `LootItemConditionType`, which are safe to use. There are also dynamic registries, like `ConfiguredFeature` and some other worldgen registries, which are typically represented in JSON. `DeferredRegister#create` has an overload which allows modders to specify the registry key of which vanilla registry to create a `RegistryObject` for. The registry method and attaching to the mod event bus is the same as other `DeferredRegister`s.
+全てのレジストリがForgeで実装されているわけではありません。`LootItemConditionType`のような静的レジストリとして実装することで安全に使用できます。また、`ConfiguredFeature`や幾つかのワールド生成レジストリのような動的レジストリを用いることでJSON形式の設定を設けることもできます。 `DeferredRegister#create`は、Modderに対し任意のVanillaレジストリキーを指定し`RegistryObject`を作成できるようにするオーバーロードを持っています。レジストリメソッドとModイベントバスへのアタッチは他の`DefferedRegister`と同様です。
 
 !!! important
-    Dynamic registry objects can **only** be registered through data files (e.g. JSON). They **cannot** be registered in-code.
+    動的レジストリオブジェクトはデータファイルを通して**のみ**登録可能です(例:JSON, YAML)。コード内宣言は**できません**。
 
 ```java
 private static final DeferredRegister<LootItemConditionType> REGISTER = DeferredRegister.create(Registries.LOOT_CONDITION_TYPE, "examplemod");
@@ -62,59 +64,59 @@ public static final RegistryObject<LootItemConditionType> EXAMPLE_LOOT_ITEM_COND
 ```
 
 !!! note
-    Some classes cannot by themselves be registered. Instead, `*Type` classes are registered, and used in the formers' constructors. For example, [`BlockEntity`][blockentity] has `BlockEntityType`, and `Entity` has `EntityType`. These `*Type` classes are factories that simply create the containing type on demand. 
+    いくつかのクラスは自己による登録をできません。その代わりに、`*Type`が登録され、前者のコンストラクタで使用されます。例えば、[`BlockEntity`][blockentity]は`BlockEntityType`、`Entity`は`EntityType`を所持しています。`*Type`クラスは、必要に応じて包容型を生成するだけです。
     
-    These factories are created through the use of their `*Type$Builder` classes. An example: (`REGISTER` refers to a `DeferredRegister<BlockEntityType>`)
+    これらのファクトリーは`*Type$Builder`クラスにより作成されます。例: (`REGISTER`は`DeferredRegister<BlockEntityType>`を指す)
     ```java
     public static final RegistryObject<BlockEntityType<ExampleBlockEntity>> EXAMPLE_BLOCK_ENTITY = REGISTER.register(
       "example_block_entity", () -> BlockEntityType.Builder.of(ExampleBlockEntity::new, EXAMPLE_BLOCK.get()).build(null)
     );
     ```
 
-Referencing Registered Objects
+登録済オブジェクトのリフレッシュ
 ------------------------------
 
-Registered objects should not be stored in fields when they are created and registered. They are to be always newly created and registered whenever `RegisterEvent` is fired for that registry. This is to allow dynamic loading and unloading of mods in a future version of Forge.
+登録したオブジェクトは作成時・登録時にフィールドに格納しないでください。これらは`RegisterEvent`の発動のたびに、常に新しく作成・登録されます。これは来るべきForgeの新バージョンにおけるModの動的ロード/アンロードのためです。
 
-Registered objects must always be referenced through a `RegistryObject` or a field with `@ObjectHolder`.
+登録済オブジェクトは`RegistryObject`か`@OPbjectHolder`フィールドを通し参照される必要があります。
 
-### Using RegistryObjects
+### RegistryObjectsの使用
 
-`RegistryObject`s can be used to retrieve references to registered objects once they are available. These are used by `DeferredRegister` to return a reference to the registered objects. Their references are updated after `RegisterEvent` is called for their registry, along with the `@ObjectHolder` annotations.
+`RegistryObject`は登録済オブジェクトが利用可能になった際に、その参照を得るために使用できます。これは`DeferredRegister`が登録済オブジェクトの参照を取得するのに使用されます。この参照は`RegisterEvent`が発動した後に、`@ObjectHolder`アノテーションの内容に従い更新されます。
 
-To get a `RegistryObject`, call `RegistryObject#create` with a `ResourceLocation` and the `IForgeRegistry` of the registrable object. Custom registries can also be used by supplying the registry name instead. Store the `RegistryObject` in a `public static final` field, and call `#get` whenever you need the registered object.
+`RegistryObject`の入手には、`RegistryObject#create`を`ResourceLocation`とレジストリ可能オブジェクトの`IForgeRegistry`とともに使用します。代わりにレジストリ名を使用することで、カスタムレジストリを使うことができます。`RegistryObject`を`public static final`フィールドに格納し、必要に応じ`#get`を実行してください。
 
-An example of using `RegistryObject`:
+`RegistryObject`の使用例:
 
 ```java
 public static final RegistryObject<Item> BOW = RegistryObject.create(new ResourceLocation("minecraft:bow"), ForgeRegistries.ITEMS);
 
-// assume that 'neomagicae:mana_type' is a valid registry, and 'neomagicae:coffeinum' is a valid object within that registry
+// 'neomagicae:mana_type'が有効なレジストリであり、'neomagicae:coffeinum'がこのレジストリ内の有効なオブジェクトであることが前提。
 public static final RegistryObject<ManaType> COFFEINUM = RegistryObject.create(new ResourceLocation("neomagicae", "coffeinum"), new ResourceLocation("neomagicae", "mana_type"), "neomagicae"); 
 ```
 
-### Using @ObjectHolder
+### @ObjectHolderの使用
 
-Registered objects from registries can be injected into the `public static` fields by annotating classes or fields with `@ObjectHolder` and supplying enough information to construct a `ResourceLocation` to identify a specific object in a specific registry.
+レジストリの登録済オブジェクトは`@ObjectHolder`アノテーションをクラス・フィールドに設定し、`ResourceLocation`に指定のレジストリのオブジェクトを認識させるため適切な情報を提供するすることで`public static`フィールドにインジェクトできます。
 
-The rules for `@ObjectHolder` are as follows:
+`@ObjectHolder`の使用規則は以下のとおりです。:
 
-* If the class is annotated with `@ObjectHolder`, its value will be the default namespace for all fields within if not explicitly defined
-* If the class is annotated with `@Mod`, the modid will be the default namespace for all annotated fields within if not explicitly defined
-* A field is considered for injection if:
-  * it has at least the modifiers `public static`;
-  * the **field** is annotated with `@ObjectHolder`, and:
-    * the name value is explicitly defined; and
-    * the registry name value is explicitly defined
-  * _A compile-time exception is thrown if a field does not have a corresponding registry or name._
-* _An exception is thrown if the resulting `ResourceLocation` is incomplete or invalid (non-valid characters in path)_
-* If no other errors or exceptions occur, the field will be injected
-* If all of the above rules do not apply, no action will be taken (and a message may be logged)
+* `@ObjectHolder`アノテーションがクラスを修飾する際、明示的な宣言がない場合はこの値は全てデフォルトの名前空間に配置されます。
+* `@Mod`アノテーションがクラスを修飾する時、 明示的な宣言がない場合は`modid`はデフォルトの名前空間で宣言されます。
+* 次の場合、フィールドは注入対象とみなされます:
+  * `public static`がある場合;
+  * **フィールド**が`@ObjectHolder`アノテーションで修飾されており、かつ:
+    * 名前の値が明示的に宣言されている; 
+    * レジストリ名の値が明示的に宣言されている
+  * _フィールドに対し対応する値がない場合、コンパイル時例外が発生します。_
+* _`ResourceLocation`の結果が不完全または不正な場合(パスに不正な文字があった時)、例外が発生します。_
+* エラーや例外がなかった場合、インジェクションは成功します。
+* 上記規則が一つでも違反された場合、アクションは発生しません(そしてメッセージがログに残ります)。
 
-`@ObjectHolder`-annotated fields are injected with their values after `RegisterEvent` is fired for their registry, along with the `RegistryObject`s.
+`@ObjectHolder`で修飾されたフィールドは`RegisterEvent`イベント発生後に`RegistryObject`とともにインジェクトされます。
 
 !!! note
-    If the object does not exist in the registry when it is to be injected, a debug message will be logged and no value will be injected.
+    インジェクト時にオブジェクトが存在しなかった場合、オブジェクトはインジェクトされず、代わりにログにDEBUGタイプのメッセージが記録されます。
 
 As these rules are rather complicated, here are some examples:
 
@@ -183,5 +185,5 @@ If no action is specified, then the default action will occur by notifying the u
 
 [ResourceLocation]: ./resources.md#resourcelocation
 [registration]: #methods-for-registering
-[event]: ./events.md
+[イベント]: ./events.md
 [blockentity]: ../blockentities/index.md

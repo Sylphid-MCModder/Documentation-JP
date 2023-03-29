@@ -1,9 +1,9 @@
-Mod Lifecycle
+Modライフサイクル
 ==============
 
-During the mod loading process, the various lifecycle events are fired on the mod-specific event bus. Many actions are performed during these events, such as [registering objects][registering], preparing for [data generation][datagen], or [communicating with other mods][imc].
+Modのロードプロセス中、Modイベントバス上にてあまたのライフサイクルイベントが発動します。多くのアクションはこの再発動します。例えば、[オブジェクトの登録][registering]、[データ生成][datagen]、あるいは[他Modとの通信][imc]など。
 
-Event listeners should be registered either using `@EventBusSubscriber(bus = Bus.MOD)` or in the mod constructor:
+イベントリスナーは`@EventBusSubscriber(bus = Bus.MOD)` かModのコンストラクタを使用して登録されるべきです。<br>例:
 
 ```Java
 @Mod.EventBusSubscriber(modid = "mymod", bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -23,47 +23,48 @@ public class MyMod {
 ```
 
 !!! warning
-    Most of the lifecycle events are fired in parallel: all mods will concurrently receive the same event.
+    多くのライフサイクルイベントは並列して発動します。全てのModは同じタイミングで同じイベントを受け取ります。
     
-    Mods *must* take care to be thread-safe, like when calling other mods' APIs or accessing vanilla systems. Defer code for later execution via `ParallelDispatchEvent#enqueueWork`.
+    Modは、他ModのAPIへの通信やVanillaのシステムへの干渉などでは、*必ず*スレッドセーフであることを確認してください。後から実行するために`ParallelDispatchEvent#enqueueWork`を介しコードを先延ばしにします。
 
-Registry Events
+レジストリイベント
 ---------------
 
-The registry events are fired after the mod instance construction. There are two: `NewRegistryEvent` and `RegisterEvent`. These events are fired synchronously during mod loading.
+レジストリイベント(`NewRegistryEvent`と`RegisterEvent`の2つ)はModコンストラクタのロード後に発動されます。これらのイベントはModのロード中に同期しながら発動されます。
 
-`NewRegistryEvent` allows modders to register their own custom registries, using the `RegistryBuilder` class.
+`NewRegistryEvent`は`RegistryBuilder`クラスを使用し、カスタムレジストリの登録を可能にします。
 
-`RegisterEvent` is for [registering objects][registering] into the registries. The event is fired for each registry. 
+`RegisterEvent`は[登録オブジェクト][registering]をレジストリに登録します。このイベントは各レジストリに対して発動します。
 
-Data Generation
+データ生成
 ---------------
 
-If the game is setup to run [data generators][datagen], then the `GatherDataEvent` will be the last event to fire. This event is for registering mods' data providers to their associated data generator. This event is also fired synchronously.
+ゲームが[データジェネレータ][datagen]の実行をセットアップした時、最後に`GatherDataEvent`が発動されます。このイベントは、登録中のModデータの提供元を関連したデータジェネレータに登録します。このイベントは同期的に発動されます。
 
-Common Setup
+コモン・セットアップ
 ------------
 
-`FMLCommonSetupEvent` is for actions that are common to both physical client and server, such as registering [capabilities][capabilities].
+`FMLCommonSetupEvent`は、[ケーパビリティー][capabilities]の登録のように、クライアントとサーバー両者に対してアクションを発動します。
 
-Sided Setup
+特定サイドセットアップ
 -----------
 
-The sided-setup events are fired on their respective [physical sides][sides]: `FMLClientSetupEvent` on the physical client, and `FMLDedicatedServerSetupEvent` for the dedicated server. This is where physical side-specific initialization should occur, such as registering client-side key bindings.
+特定サイドセットアップイベントは[物理的サイド][sides]に基づきセットアップを行います: `FMLClientSetupEvent`はクライアントに、`FMLDedicatedServerSetupEvent`はサーバーに対して。これはクライアントに対するキーバインド設定のように、アクション・初期化が実行されるべきサイドを考慮する際に使用します。
 
-InterModComms
+InterModComms(Mod間内部通信)
 -------------
 
-This is where messages can be sent to mods for cross-mod compatibility. There are two events: `InterModEnqueueEvent` and `InterModProcessEvent`.
+これはMod間での通信の際に、どのModにメッセージを渡すかを指定します。以下の2イベントが定義済みです: `InterModEnqueueEvent`・`InterModProcessEvent`。
 
-`InterModComms` is the class responsible for holding messages for mods. The methods are safe to call during the lifecycle events, as it is backed by a `ConcurrentMap`.
+`InterModComms`はModのメッセージを保持する責任を持つクラスです。これらのメソッドは`ConcurrentMap`により、ライフサイクルイベントの発動中に実行しても安全です。
 
-During the `InterModEnqueueEvent`, use `InterModComms#sendTo` to send messages to different mods. These methods take in the mod id that will be sent the message, the key associated with the message data, and a supplier holding the message data. Additionally, the sender of the message can also be specified, but by default it will be the mod id of the caller.
+`InterModEnqueueEvent`の発動中、`InterModComms#sendTo`を用いることで他のModにメッセージを伝達できます。これらのメソッドはメッセージ伝達の際にModIDを使用し、そのキーはメッセージデータと関連づけられ、サプライヤはメッセージデータを保持します。さらに、メッセージ送信者はそのModIDで指定可能です。
 
-Then during the `InterModProcessEvent`, use `InterModComms#getMessages` to get a stream of all received messages. The mod id supplied will almost always be the mod id of the mod the method is called on. Additionally, a predicate can be specified to filter out the message keys. This will return a stream of `IMCMessage`s which hold the sender of the data, the receiver of the data, the data key, and the supplied data itself.
-
+そして`InterModProcessEvent`発動中、`InterModComms#getMessages`の使用で受信済メッセージのストリームを取得可能です。提供されたModIDは、ほとんどの場合メソッドが呼出されるModのModIDになります。さらに、Predicateはメッセージキーのフィルターに指定できます。これは 送信者のデータとデータキー、さらにそのデータ自身を含む`IMCMessage`のストリームを返します。
 !!! note
-    There are two other lifecycle events: `FMLConstructModEvent`, fired directly after mod instance construction but before the `RegisterEvent`, and `FMLLoadCompleteEvent`, fired after the `InterModComms` events, for when the mod loading process is complete.
+    次の二つのライフサイクルイベントが定義されています: 
+    * `FMLConstructModEvent`はModインスタンスの構築後、および`RegisterEvent`との発動前に発動します。
+    * `FMLLoadCompleteEvent`は`InterModComms`イベント発動後に発動し、Modロードのプロセスが完了したことを通知します。
 
 [registering]: ./registries.md#methods-for-registering
 [capabilities]: ../datastorage/capabilities.md

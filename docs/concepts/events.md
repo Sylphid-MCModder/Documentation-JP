@@ -1,37 +1,37 @@
-Events
+イベント
 ======
 
-Forge uses an event bus that allows mods to intercept events from various Vanilla and mod behaviors.
+ForgeはVanillaとModの動作からイベントを傍受できるイベントバスを使用します。
 
-Example: An event can be used to perform an action when a Vanilla stick is right clicked.
+例: Vanillaな棒を右クリックした時に、アクションを発生させるイベント
 
-The main event bus used for most events is located at `MinecraftForge#EVENT_BUS`. There is another event bus for mod specific events located at `FMLJavaModLoadingContext#getModEventBus` that you should only use in specific cases. More information about this bus can be found below.
+主要なイベントは`MinecraftForge#EVENT_BUS`にあります。`FMLJavaModLoadingContext#getModEventBus`には、特殊な用例のイベントが記載されています。更なる情報はここから得られるでしょう。
 
-Every event is fired on one of these busses: most events are fired on the main forge event bus, but some are fired on the mod specific event buses.
+全てのイベントはこれらイベントバスを介して発動します: 大半のイベントはForgeのイベントバスを介しますが、一部のイベントはMod固有のイベントバスを介して発動します。
 
-An event handler is some method that has been registered to an event bus.
+「イベントハンドラー」は、イベントをイベントバスに登録するためのメソッド群です。
 
-Creating an Event Handler
+イベントハンドラーの作成
 -------------------------
 
-Event handlers methods have a single parameter and do not return a result. The method could be static or instance depending on implementation.
+イベントハンドラーは1つのパラメータを持ち、返り値を持ちません。メソッドは実装によってはstaticやinstanceになる可能性があります。
 
-Event handlers can be directly registered using `IEventBus#addListener` for or `IEventBus#addGenericListener` for generic events (as denoted by subclassing `GenericEvent<T>`). Either listener adder takes in a consumer representing the method reference. Generic event handlers need to specify the class of the generic as well. Event handlers must be registered within the constructor of the main mod class.
+イベントハンドラーは`IEventBus#addListener`、またはジェネリックイベント向けの`IEventBus#addGenericListener`を用いて登録できます(`GenericEvent<T>`サブクラスにより示される)。いずれのリスナー追加者も、メソッドへの参照を表すコンシューマーを受け取ります。ジェネリックイベントハンドラーはジェネリッククラスを指定する必要があります。イベントハンドラーはすべて、メインクラスに含まれるコンストラクタで登録される必要があります。
 
 ```java
-// In the main mod class ExampleMod
+// ExampleModのメインクラス
 
-// This event is on the mod bus
+// Modのイベントバス
 private void modEventHandler(RegisterEvent event) {
-	// Do things here
+	// 動作を記述
 }
 
-// This event is on the forge bus
+// Forgeのイベントバス
 private static void forgeEventHandler(AttachCapabilitiesEvent<Entity> event) {
-	// ...
+	// 略
 }
 
-// In the mod constructor
+// Modのコンストラクタ
 modEventBus.addListener(this::modEventHandler);
 forgeEventBus.addGenericListener(Entity.class, ExampleMod::forgeEventHandler);
 ```

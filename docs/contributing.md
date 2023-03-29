@@ -1,36 +1,37 @@
-Contributing to This Documentation
+ドキュメントに貢献する
 ==================================
 
-This documentation is meant to be explanatory. Please explain how to do things, and break it down into reasonable chunks.
-We have a wiki elsewhere that can capture more comprehensive code examples.
+このドキュメントの内容は詳細に説明されているべきです。それぞれの要素の「やり方」を、読みやすい段落に分けて詳細に記述してください。
+サンプルコードの参照のためにはここではない他のいい場所があります。
 
-Our audience is anyone who wants to understand how to build a mod using Forge.
+このドキュメントは**MinecraftForgeを使ってModを開発したい全ての人**のためのものです。
 
-Please don't try to turn this documentation into a tutorial on Java Development - it is intended for people who understand how a Java class works, and other fundamental structures of Java.
+絶対にJavaのチュートリアル(オブジェクト指向、クラスの動作、基本的な構造など)を記載しないでください。
 
-Style Guide
+スタイルガイド
 -----------
 
 !!! important
-    Please use **two spaces** to indent, not tabs.
+    インデントにはTabではなく**2スペース**をご利用ください。
 
-Titles should be capitalized in the standard titling format. For example,
+タイトルは標準的な記法にする必要があります。<br>例:
+* ドキュメント貢献ガイド
+* Modのビルドとテスト
 
-* Guide For Contributing to This Documentation
-* Building and Testing Your Mod
+基本的に、重要でなさそうなワードもすべてタイトルに含めてください。
 
-Essentially, capitalize everything but unimportant words.
+記法は日本語に基づきます。スラング等も標準語の範囲内にしてください。
 
-Spelling, grammar, and syntax should follow those of American English. Also, prefer using separate words over contractions (e.g. "are not" instead of "aren't").
+<!--　訳註:元の記述は「アメリカ英語」となっていましたが、翻訳にあたり「日本語」としました。 -->
 
-Please use equals and dash underlines, instead of `#` and `##`. For h3 and lower, `###` etc. is fine. The source of this file contains an example for equals and dash underlining. Equals underlines create h1 text, and dash underlines create h2 text.
+`#`と`##`の代替として、`=`と`_`を使用してください。H3以上の段落の場合、`###`を利用可能です。このドキュメント中のソースコードはこの記法に基づいて記載されています。`=`はH1テキスト、`_`はH2テキストを作成します。
 
-When referencing fields and methods outside of code block snippets, they should use a `#` separator (e.g. `ClassName#methodName`). Inner classes should use a `$` separator (e.g. `ClassName$InnerClassName`).
+コードブロック外でフィールドやメソッドを参照する場合。`#`セパレータを使用してください(例:`ClassName#methodName`)。 内部クラスは`$`セパレータで記述してください(例: `ClassName$InnerClassName`)。
 
-JSON code block snippets should use `js` syntax highlighting.
+ JSONコードスニペットの場合、`js`構文ハイライトを使用してください。
 
-All links should have their location specified at the bottom of the page. Any internal links should reference the page via their relative path.
+全てのハイパーリンクの定義はページ末に記述してください。内部リンクはすべて相対パスで制御されます。
 
-Admonitions (represented by `!!! <type>`) must be formatted as [documented][admonition]; otherwise they may end up rendering incorrectly.
+忠告(`!!! <type>`)は[記述された][admonition]通りに記載してください: その他の記法で書くと正常な動作をしない場合があります。
 
 [admonition]: https://python-markdown.github.io/extensions/admonition/
